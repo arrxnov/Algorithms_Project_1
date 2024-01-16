@@ -6,20 +6,13 @@
 void insertionSort(int* list, int len)
 {
 	int temp;
-	for (int i = 0; i < len; i++) // position in list to insert into
+	for (int i = 1; i < len; i++) // position in list to insert into
 	{
 		temp = list[i];
-		int j = i;
-		while (j > 0)
+		int j = i - 1;
+		while (j and list[j] > temp)
 		{
-			if (temp <= list[j])
-			{
-				list[j + 1] = list[j];
-			}
-			else
-			{
-				list[j + 1] = temp;
-			}
+			list[j + 1] = list[j];
 			j--;
 		}
 	}
