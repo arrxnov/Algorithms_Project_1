@@ -24,4 +24,6 @@ int main(int argc, char** argv)
 
 	ofstream outputFile;
 	outputFile.open("output.csv");
+
+	return 0;
 }
