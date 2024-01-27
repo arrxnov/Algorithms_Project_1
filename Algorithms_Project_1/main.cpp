@@ -3,23 +3,23 @@
 #include <fstream>
 #include <chrono>
 
-void swap(int* list, int x, int y)
+void swap(int* list, int* x, int* y)
 {
-	int temp = list[x];
-	list[x] = list[y];
-	list[y] = temp;
+	int temp = *x;
+	*x = *y;
+	*y = temp;
 }
 
-int partition(int* list, int first, int last)
+int* partition(int* list, int* first, int* last)
 {
-	int pivot = list[last];
-	int lower = first;
-	int upper = last - 1;
+	int* pivot = last;
+	int* lower = first;
+	int* upper = last - 1;
 	while (lower <= upper)
 	{
-		while (lower <= upper && list[upper] >= pivot) upper--;
-		while (lower <= upper && list[lower] <= pivot) lower++;
-		if (list[lower] < list[upper]) swap(list, lower, upper);
+		while (lower <= upper && upper >= pivot) upper--;
+		while (lower <= upper && lower <= pivot) lower++;
+		if (*lower < *upper) swap(list, lower, upper);
 	}
 	swap(list, lower, last);
 	return lower;
@@ -27,24 +27,25 @@ int partition(int* list, int first, int last)
 
 void insertionSort(int* list, int len)
 {
-	int temp;
-	for (int i = 1; i < len; i++)
+	int key;
+	for (int j = 1; j < len; j++)
 	{
-		temp = list[i];
-		int j = i - 1;
-		while (j and list[j] > temp)
+		key = list[j];
+		int i = j - 1;
+		while (i >= 0 && list[i] > key)
 		{
-			list[j + 1] = list[j];
-			j--;
+			list[i + 1] = list[i];
+			i--;
 		}
+		list[i + 1] = key;
 	}
 }
 
-void quickSort(int* list, int first, int last)
+void quickSort(int* list, int *first, int *last)
 {
-	if (first < last)
+	if (*first < *last)
 	{
-		int mid = /*partition(list, first, last)*/0;
+		int* mid = partition(list, first, last);
 		quickSort(list, first, mid - 1);
 		quickSort(list, mid + 1, last);
 	}
@@ -56,15 +57,18 @@ int main(int argc, char** argv)
 
 	ofstream outputFile;
 	outputFile.open("output.csv");
-	
-	// Build array of randomized data
+	srand(time(0));
+	int arr[100];
+	for (int i = 0; i < 100; i++) arr[i] = rand();
 	
 	auto start = std::chrono::high_resolution_clock::now();
 
-	
+	quickSort(arr, arr, arr + 99);
 	// Sort array
 
 	auto finish = std::chrono::high_resolution_clock::now();
+
+	for (int i = 0; i < 100; i++) std::cout << arr[i] << std::endl;
 
 	return 0;
 }
