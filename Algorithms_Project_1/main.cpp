@@ -5,7 +5,9 @@
 
 void swap(int* list, int x, int y)
 {
-	// Had a harder time following pcode here.
+	int temp = list[x];
+	list[x] = list[y];
+	list[y] = temp;
 }
 
 int partition(int* list, int first, int last)
@@ -17,7 +19,7 @@ int partition(int* list, int first, int last)
 	{
 		while (lower <= upper && list[upper] >= pivot) upper--;
 		while (lower <= upper && list[lower] <= pivot) lower++;
-		if (lower < upper) swap(list, lower, upper);
+		if (list[lower] < list[upper]) swap(list, lower, upper);
 	}
 	swap(list, lower, last);
 	return lower;
@@ -54,10 +56,13 @@ int main(int argc, char** argv)
 
 	ofstream outputFile;
 	outputFile.open("output.csv");
-
+	
+	// Build array of randomized data
+	
 	auto start = std::chrono::high_resolution_clock::now();
 
-	// Algorithm operation
+	
+	// Sort array
 
 	auto finish = std::chrono::high_resolution_clock::now();
 
