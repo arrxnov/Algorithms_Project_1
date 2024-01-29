@@ -7,7 +7,7 @@
 //		FUNC POINTERS
 //****************************
 
-// The presence of function pointers allows us to change the 
+// The use of function pointers allows us to change the 
 // function being used to perform certain tasks while maintaining
 // a smaller codebase for the quicksort function. Each function
 // pointer points to one method whose impact we are 
@@ -166,14 +166,14 @@ void runSorts(int arrSize)
 	int fillmethod = (fillArray == &fillRand) ? 1 : (fillArray == &fillForward) + 2;
 	int pivotmethod = (pivot == &pivotLast) ? 1 : (pivot == &pivotMedian) + 2;
 
-	// ARRAYSIZE,QSTIME,ISTIME,PARTMETHOD,/*PIVMETHOD,*/FILLMETHOD
+	// ARRAYSIZE,QSTIME,ISTIME,PARTMETHOD,PIVMETHOD,FILLMETHOD
 	outFile << arrSize << "," 
 		<< quickSortNanoSeconds.count() << "," 
 		<< insertionSortNanoSeconds.count() << ","
 		<< partmethod << ","
 		<< pivotmethod << ","
-		<< fillmethod;
-	outFile << endl;
+		<< fillmethod
+		<< endl;
 
 	delete[] arr;
 	outFile.close();
@@ -193,7 +193,7 @@ int main(int argc, char** argv)
 	for (int arrSize = 100; arrSize < 1000; arrSize++)
 	{
 		// Test all partition functions
-		// Outside of these tests, we always use two-pointer
+		// Outside of these tests, we always use the two-pointer method
 		bool done = false;
 		while (!done)
 		{
@@ -206,20 +206,20 @@ int main(int argc, char** argv)
 			}
 		}
 
-		//// Test all pivot functions
-		//// Outside of these tests, we always use last := pivot
-		//pivot = &pivotMedian;
-		//done = false;
-		//while (!done)
-		//{
-		//	runSorts(arrSize);
-		//	if (pivot == &pivotMedian) pivot = &pivotMed3;
-		//	else
-		//	{
-		//		pivot = &pivotLast;
-		//		done = true;
-		//	}
-		//}
+		// Test all pivot functions
+		// Outside of these tests, we always use pivot := last
+		pivot = &pivotMedian;
+		done = false;
+		while (!done)
+		{
+			runSorts(arrSize);
+			if (pivot == &pivotMedian) pivot = &pivotMed3;
+			else
+			{
+				pivot = &pivotLast;
+				done = true;
+			}
+		}
 
 		// Test all data fill methods
 		// Outside of these tests we always use randomized data
