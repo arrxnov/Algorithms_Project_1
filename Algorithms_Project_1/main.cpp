@@ -17,9 +17,9 @@ int* partition(int* list, int* first, int* last)
 	int* upper = last - 1;
 	while (lower <= upper)
 	{
-		while (lower <= upper && upper >= pivot) upper--;
-		while (lower <= upper && lower <= pivot) lower++;
-		if (*lower < *upper) swap(list, lower, upper);
+		while (lower <= upper && *upper >= *pivot) upper--;
+		while (lower <= upper && *lower <= *pivot) lower++;
+		if (lower < upper) swap(list, lower, upper);
 	}
 	swap(list, lower, last);
 	return lower;
@@ -43,7 +43,7 @@ void insertionSort(int* list, int len)
 
 void quickSort(int* list, int *first, int *last)
 {
-	if (*first < *last)
+	if (first < last)
 	{
 		int* mid = partition(list, first, last);
 		quickSort(list, first, mid - 1);
@@ -60,15 +60,16 @@ int main(int argc, char** argv)
 	srand(time(0));
 	int arr[100];
 	for (int i = 0; i < 100; i++) arr[i] = rand();
-	
-	auto start = std::chrono::high_resolution_clock::now();
+	for (int i = 0; i < 100; i++) cout << arr[i] << endl;
 
-	quickSort(arr, arr, arr + 99);
+	auto start = chrono::high_resolution_clock::now();
+
+	quickSort(arr, arr, &arr[99]);
 	// Sort array
+	cout << "-----BREAK-----" << endl;
+	auto finish = chrono::high_resolution_clock::now();
 
-	auto finish = std::chrono::high_resolution_clock::now();
-
-	for (int i = 0; i < 100; i++) std::cout << arr[i] << std::endl;
+	for (int i = 0; i < 100; i++) cout << arr[i] << endl;
 
 	return 0;
 }
