@@ -54,16 +54,12 @@ void fillForward(int* arr, int arrSize)
 
 int* pivotLast(int* arr, int* first, int* last) { return last; }
 
-//int* pivotMedian(int* arr, int* first, int* last)
-//{
-//	for (int i = 0; i < last - first; i += 5)
-//	{
-//		int* subArr = &arr[i];
-//		int big = INT_MIN;
-//		int small = INT_MAX;
-//		
-//	}
-//}
+int* pivotMedian(int* arr, int* first, int* last)
+{
+	int len = last - first;
+	int half = len / 2;
+	return first + half;
+}
 
 int* pivotMed3(int* arr, int* first, int* last)
 {
@@ -145,13 +141,12 @@ void insertionSort(int* list, int len)
 void runSorts(int arrSize)
 {
 	using namespace std;
-	
-	int* arr = new int[arrSize];
-	fillArray(arr, arrSize);
-
 	ofstream outFile;
 	outFile.open("out.csv", ios_base::app);
-
+	
+	int* arr = new int[arrSize];
+	
+	fillArray(arr, arrSize);
 	auto start = chrono::high_resolution_clock::now();
 	quickSort(arr, arr, &arr[arrSize - 1]);
 	auto finish = chrono::high_resolution_clock::now();
@@ -162,18 +157,21 @@ void runSorts(int arrSize)
 	insertionSort(arr, arrSize);
 	finish = chrono::high_resolution_clock::now();
 	auto insertionSortNanoSeconds = chrono::duration_cast<chrono::nanoseconds>(finish - start);
+
 	cout << arrSize << " elements " << endl;
 	cout << "- Insertion Sort: " << insertionSortNanoSeconds.count() << " nanoseconds" << endl;
 	cout << "- Quicksort: " << quickSortNanoSeconds.count() << " nanoseconds" << endl;
 
 	int partmethod = (partition == &partitionTwoPointer) + 1;
 	int fillmethod = (fillArray == &fillRand) ? 1 : (fillArray == &fillForward) + 2;
+	int pivotmethod = (pivot == &pivotLast) ? 1 : (pivot == &pivotMedian) + 2;
+
 	// ARRAYSIZE,QSTIME,ISTIME,PARTMETHOD,/*PIVMETHOD,*/FILLMETHOD
 	outFile << arrSize << "," 
 		<< quickSortNanoSeconds.count() << "," 
 		<< insertionSortNanoSeconds.count() << ","
 		<< partmethod << ","
-		/*<< (pivot == &pivotLast) ? 1 : (pivot == &pivotMedian) + 2 << ","*/
+		<< pivotmethod << ","
 		<< fillmethod;
 	outFile << endl;
 
