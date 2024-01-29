@@ -51,7 +51,13 @@ int* pivotMedian(int* arr, int* first, int* last)
 
 int* pivotMed3(int* arr, int* first, int* last)
 {
-	// Finish
+	int x = *first;
+	int y = *last;
+	int z = arr[last - first];
+
+	if ((x <= y && x >= z) || (x <= z && x >= y)) return first;
+	else if ((y <= x && y >= x) || (y >= x && y <= z)) return last;
+	else return &arr[last - first];
 }
 
 //*********************************
@@ -60,13 +66,14 @@ int* pivotMed3(int* arr, int* first, int* last)
 
 int* partitionTwoPointer(int* list, int* first, int* last)
 {
-	int* pivot = last;
+	int* (*pivotSelect)(int*, int*, int*) = pivot;
+	int* pivotPtr = pivotSelect(list, first, last);
 	int* lower = first;
 	int* upper = last - 1;
 	while (lower <= upper)
 	{
-		while (lower <= upper && *upper >= *pivot) upper--;
-		while (lower <= upper && *lower <= *pivot) lower++;
+		while (lower <= upper && *upper >= *pivotPtr) upper--;
+		while (lower <= upper && *lower <= *pivotPtr) lower++;
 		if (lower < upper) swap(list, lower, upper);
 	}
 	swap(list, lower, last);
@@ -75,11 +82,11 @@ int* partitionTwoPointer(int* list, int* first, int* last)
 
 int* partitionOnePointer(int* arr, int* first, int* last)
 {
-	int* pivot = last;
+	int* pivotPtr = pivot(arr, first, last);
 	int* lowPointer = first - 1;
 	for (int* ptr = first; ptr < last; ptr++)
 	{
-		if (*ptr <= *pivot)
+		if (*ptr <= *pivotPtr)
 		{
 			lowPointer++;
 			swap(arr, lowPointer, ptr);
@@ -125,8 +132,10 @@ void runSorts(int arrSize)
 	using namespace std;
 	
 	int* arr = new int[arrSize];
-
 	fillArray(arr, arrSize);
+
+	ofstream outFile;
+	outFile.open("out.csv", ios_base::app);
 
 	auto start = chrono::system_clock::now();
 	quickSort(arr, arr, &arr[arrSize - 1]);
@@ -138,10 +147,16 @@ void runSorts(int arrSize)
 	auto finish = chrono::system_clock::now();
 	auto insertionSortNanoSeconds = chrono::duration_cast<chrono::nanoseconds>(finish - start);
 
-	cout << "[+] Insertion Sort: " << insertionSortNanoSeconds.count() << " nanoseconds" << endl;
-	cout << "[+] Quicksort: " << quickSortNanoSeconds.count() << " nanoseconds" << endl;
+	cout << "- Insertion Sort: " << insertionSortNanoSeconds.count() << " nanoseconds" << endl;
+	cout << "- Quicksort: " << quickSortNanoSeconds.count() << " nanoseconds" << endl;
+
+	// ARRAYSIZE,QSTIME,ISTIME,PARTMETHOD,PIVMETHOD,FILLMETHOD
+	cout << arrSize << "," << quickSortNanoSeconds.count() << "," << insertionSortNanoSeconds.count() << ","
+		<< (partition == &partitionTwoPointer) + 1 << (pivot == &pivotLast) ? 1 : (pivot == &pivotMedian) + 2
+		<< (fillArray == &fillRand) ? 1 : (fillArray == &fillForward) + 2; 
 
 	delete[] arr;
+	outFile.close();
 }
 
 //*****************
@@ -153,6 +168,8 @@ int main(int argc, char** argv)
 	using namespace std;
  
 	partition = &partitionTwoPointer;
+	pivot = &pivotLast;
+	fillArray = &fillRand;
 	for (int arrSize = 100; arrSize < 10000; arrSize++)
 	{
 		// Test all partition functions
