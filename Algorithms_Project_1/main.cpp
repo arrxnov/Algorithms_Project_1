@@ -3,13 +3,23 @@
 #include <fstream>
 #include <chrono>
 
-//**************************
+//****************************
 //		FUNC POINTERS
-//**************************
+//****************************
+
+// The presence of function pointers allows us to change the 
+// function being used to perform certain tasks while maintaining
+// a smaller codebase for the quicksort function. Each function
+// pointer points to one method whose impact we are 
+// to measure. Their default values are given in the runSorts() function.
 
 int* (*partition) (int* list, int* first, int* last);
 int* (*pivot) (int* list, int* first, int* last);
 void (*fillArray) (int* arr, int arrSize);
+
+//****************************
+//		    SWAP
+//****************************
 
 void swap(int* list, int* x, int* y)
 {
@@ -44,10 +54,16 @@ void fillForward(int* arr, int arrSize)
 
 int* pivotLast(int* arr, int* first, int* last) { return last; }
 
-int* pivotMedian(int* arr, int* first, int* last)
-{
-	// Finish
-}
+//int* pivotMedian(int* arr, int* first, int* last)
+//{
+//	for (int i = 0; i < last - first; i += 5)
+//	{
+//		int* subArr = &arr[i];
+//		int big = INT_MIN;
+//		int small = INT_MAX;
+//		
+//	}
+//}
 
 int* pivotMed3(int* arr, int* first, int* last)
 {
@@ -66,8 +82,7 @@ int* pivotMed3(int* arr, int* first, int* last)
 
 int* partitionTwoPointer(int* list, int* first, int* last)
 {
-	int* (*pivotSelect)(int*, int*, int*) = pivot;
-	int* pivotPtr = pivotSelect(list, first, last);
+	int* pivotPtr = pivot(list, first, last);
 	int* lower = first;
 	int* upper = last - 1;
 	while (lower <= upper)
@@ -137,23 +152,30 @@ void runSorts(int arrSize)
 	ofstream outFile;
 	outFile.open("out.csv", ios_base::app);
 
-	auto start = chrono::system_clock::now();
+	auto start = chrono::high_resolution_clock::now();
 	quickSort(arr, arr, &arr[arrSize - 1]);
-	auto finish = chrono::system_clock::now();
+	auto finish = chrono::high_resolution_clock::now();
 	auto quickSortNanoSeconds = chrono::duration_cast<chrono::nanoseconds>(finish - start);
 
-	auto start = chrono::system_clock::now();
+	fillArray(arr, arrSize);
+	start = chrono::high_resolution_clock::now();
 	insertionSort(arr, arrSize);
-	auto finish = chrono::system_clock::now();
+	finish = chrono::high_resolution_clock::now();
 	auto insertionSortNanoSeconds = chrono::duration_cast<chrono::nanoseconds>(finish - start);
-
+	cout << arrSize << " elements " << endl;
 	cout << "- Insertion Sort: " << insertionSortNanoSeconds.count() << " nanoseconds" << endl;
 	cout << "- Quicksort: " << quickSortNanoSeconds.count() << " nanoseconds" << endl;
 
-	// ARRAYSIZE,QSTIME,ISTIME,PARTMETHOD,PIVMETHOD,FILLMETHOD
-	cout << arrSize << "," << quickSortNanoSeconds.count() << "," << insertionSortNanoSeconds.count() << ","
-		<< (partition == &partitionTwoPointer) + 1 << (pivot == &pivotLast) ? 1 : (pivot == &pivotMedian) + 2
-		<< (fillArray == &fillRand) ? 1 : (fillArray == &fillForward) + 2; 
+	int partmethod = (partition == &partitionTwoPointer) + 1;
+	int fillmethod = (fillArray == &fillRand) ? 1 : (fillArray == &fillForward) + 2;
+	// ARRAYSIZE,QSTIME,ISTIME,PARTMETHOD,/*PIVMETHOD,*/FILLMETHOD
+	outFile << arrSize << "," 
+		<< quickSortNanoSeconds.count() << "," 
+		<< insertionSortNanoSeconds.count() << ","
+		<< partmethod << ","
+		/*<< (pivot == &pivotLast) ? 1 : (pivot == &pivotMedian) + 2 << ","*/
+		<< fillmethod;
+	outFile << endl;
 
 	delete[] arr;
 	outFile.close();
@@ -170,7 +192,7 @@ int main(int argc, char** argv)
 	partition = &partitionTwoPointer;
 	pivot = &pivotLast;
 	fillArray = &fillRand;
-	for (int arrSize = 100; arrSize < 10000; arrSize++)
+	for (int arrSize = 100; arrSize < 1000; arrSize++)
 	{
 		// Test all partition functions
 		// Outside of these tests, we always use two-pointer
@@ -186,29 +208,29 @@ int main(int argc, char** argv)
 			}
 		}
 
-		// Test all pivot functions
-		// Outside of these tests, we always use last := pivot
-		done = false;
-		while (!done)
-		{
-			runSorts(arrSize);
-			if (pivot == &pivotLast) pivot = &pivotMedian;
-			else if (pivot == &pivotMedian) pivot = &pivotMed3;
-			else
-			{
-				pivot = &pivotLast;
-				done = true;
-			}
-		}
+		//// Test all pivot functions
+		//// Outside of these tests, we always use last := pivot
+		//pivot = &pivotMedian;
+		//done = false;
+		//while (!done)
+		//{
+		//	runSorts(arrSize);
+		//	if (pivot == &pivotMedian) pivot = &pivotMed3;
+		//	else
+		//	{
+		//		pivot = &pivotLast;
+		//		done = true;
+		//	}
+		//}
 
 		// Test all data fill methods
 		// Outside of these tests we always use randomized data
+		fillArray = &fillReverse;
 		done = false;
 		while (!done)
 		{
 			runSorts(arrSize);
-			if (fillArray == &fillRand) fillArray = &fillReverse;
-			else if (fillArray == &fillReverse) fillArray = &fillForward;
+			if (fillArray == &fillReverse) fillArray = &fillForward;
 			else
 			{
 				done = true;
@@ -216,6 +238,5 @@ int main(int argc, char** argv)
 			}
 		}
 	}
-
 	return 0;
 }
