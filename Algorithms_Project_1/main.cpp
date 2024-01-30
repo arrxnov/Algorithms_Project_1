@@ -190,51 +190,71 @@ int main(int argc, char** argv)
 	partition = &partitionTwoPointer;
 	pivot = &pivotLast;
 	fillArray = &fillRand;
-	for (int arrSize = 100; arrSize < 1000; arrSize++)
+	for (int arrSize = 100; arrSize < 50000; arrSize++)
 	{
-		// Test all partition functions
-		// Outside of these tests, we always use the two-pointer method
-		bool done = false;
-		while (!done)
+		for (int j = 0; j < 2; j++)
 		{
-			runSorts(arrSize);
+			for (int k = 0; k < 3; k++)
+			{
+				for (int l = 0; l < 3; l++)
+				{
+					runSorts(arrSize);
+
+					if (l == 0) fillArray = &fillReverse;
+					else if (l == 1) fillArray = &fillForward;
+				}
+
+				if (k == 0) pivot = &pivotMedian;
+				else if (k == 1) pivot = &pivotMed3;
+			}
+
 			if (partition == &partitionTwoPointer) partition = &partitionOnePointer;
-			else
-			{
-				done = true;
-				partition = &partitionTwoPointer; 
-			}
 		}
+		
+		
+		//// Test all partition functions
+		//// Outside of these tests, we always use the two-pointer method
+		//bool done = false;
+		//while (!done)
+		//{
+		//	runSorts(arrSize);
+		//	if (partition == &partitionTwoPointer) partition = &partitionOnePointer;
+		//	else
+		//	{
+		//		done = true;
+		//		partition = &partitionTwoPointer; 
+		//	}
+		//}
 
-		// Test all pivot functions
-		// Outside of these tests, we always use pivot := last
-		pivot = &pivotMedian;
-		done = false;
-		while (!done)
-		{
-			runSorts(arrSize);
-			if (pivot == &pivotMedian) pivot = &pivotMed3;
-			else
-			{
-				pivot = &pivotLast;
-				done = true;
-			}
-		}
+		//// Test all pivot functions
+		//// Outside of these tests, we always use pivot := last
+		//pivot = &pivotMedian;
+		//done = false;
+		//while (!done)
+		//{
+		//	runSorts(arrSize);
+		//	if (pivot == &pivotMedian) pivot = &pivotMed3;
+		//	else
+		//	{
+		//		pivot = &pivotLast;
+		//		done = true;
+		//	}
+		//}
 
-		// Test all data fill methods
-		// Outside of these tests we always use randomized data
-		fillArray = &fillReverse;
-		done = false;
-		while (!done)
-		{
-			runSorts(arrSize);
-			if (fillArray == &fillReverse) fillArray = &fillForward;
-			else
-			{
-				done = true;
-				fillArray = &fillRand;
-			}
-		}
+		//// Test all data fill methods
+		//// Outside of these tests we always use randomized data
+		//fillArray = &fillReverse;
+		//done = false;
+		//while (!done)
+		//{
+		//	runSorts(arrSize);
+		//	if (fillArray == &fillReverse) fillArray = &fillForward;
+		//	else
+		//	{
+		//		done = true;
+		//		fillArray = &fillRand;
+		//	}
+		//}
 	}
 	return 0;
 }
