@@ -187,15 +187,15 @@ int main(int argc, char** argv)
 {
 	using namespace std;
  
-	partition = &partitionTwoPointer;
-	pivot = &pivotLast;
-	fillArray = &fillRand;
-	for (int arrSize = 100; arrSize < 50000; arrSize++)
+	for (int arrSize = 1000; arrSize < 50000; arrSize += 1000)
 	{
+		partition = &partitionTwoPointer;
 		for (int j = 0; j < 2; j++)
 		{
+			pivot = &pivotLast;
 			for (int k = 0; k < 3; k++)
 			{
+				fillArray = &fillRand;
 				for (int l = 0; l < 3; l++)
 				{
 					runSorts(arrSize);
